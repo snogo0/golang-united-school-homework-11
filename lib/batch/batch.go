@@ -18,14 +18,15 @@ func getBatch(n int64, pool int64) (res []user) {
 	var mu sync.Mutex
 	var wg sync.WaitGroup
 	sem := make(chan struct{}, pool)
-	for i := 0; i < int(n); i++ {
+	var i int64
+	for i = 0; i < n; i++ {
 		wg.Add(1)
 		sem <- struct{}{}
-		go func(j int) {
+		go func(j int64) {
 			defer wg.Done()
 			defer func() { <-sem }()
 			defer mu.Unlock()
-			u := getOne(int64(j))
+			u := getOne(j)
 			mu.Lock()
 			res = append(res, u)
 		}(i)
